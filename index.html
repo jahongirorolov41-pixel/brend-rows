@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BREND ROWS | Online Shop</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      color: #171717;
+    }
+    header {
+      background: #111;
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      letter-spacing: 4px;
+    }
+    header p { color: #ccc; }
+    .hero {
+      background: #e8e3db;
+      text-align: center;
+      padding: 45px 15px;
+    }
+    .hero h2 { font-size: 30px; }
+    .search {
+      width: 90%;
+      max-width: 500px;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 18px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 8px #0000000c;
+    }
+    .picture {
+      background: #eee;
+      border-radius: 10px;
+      font-size: 65px;
+      padding: 20px 0;
+    }
+    .price { font-weight: bold; }
+    button {
+      background: #111;
+      color: white;
+      border: 0;
+      padding: 11px;
+      border-radius: 7px;
+      width: 100%;
+      cursor: pointer;
+    }
+    #cart {
+      max-width: 900px;
+      margin: 0 auto 20px;
+      padding: 18px;
+      background: white;
+      border-radius: 12px;
+    }
+    footer {
+      text-align: center;
+      padding: 22px;
+      background: #111;
+      color: white;
+    }
+    @media (min-width: 650px) {
+      .products { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BREND ROWS</h1>
+    <p>STYLE • QUALITY • SHOPPING</p>
+  </header>
+
+  <section class="hero">
+    <h2>O'z uslubingni tanla.</h2>
+    <p>Yangi mahsulotlarimiz bilan tanishing!</p>
+    <input class="search" id="search"
+      placeholder="Mahsulot qidirish..."
+      oninput="renderProducts()">
+  </section>
+
+  <h2 style="text-align:center">Mahsulotlar</h2>
+  <main class="products" id="products"></main>
+
+  <section id="cart">
+    <h2>🛒 Savatcha (<span id="count">0</span>)</h2>
+    <div id="cartItems">Savatcha hozircha bo'sh.</div>
+    <h3>Jami: <span id="total">0</span> so'm</h3>
+    <button onclick="order()">Buyurtma berish</button>
+    <p id="message"></p>
+  </section>
+
+  <footer>
+    <p>© 2026 BREND ROWS</p>
+    <p>Biz bilan xarid qilish qulay!</p>
+  </footer>
+
+  <script>
+    const products = [
+      {id:1, name:"Klassik futbolka", price:79000, emoji:"👕"},
+      {id:2, name:"Zamonaviy krossovka", price:250000, emoji:"👟"},
+      {id:3, name:"Qo'l soati", price:180000, emoji:"⌚"},
+      {id:4, name:"Zamonaviy sumka", price:145000, emoji:"👜"},
+      {id:5, name:"Kepka", price:55000, emoji:"🧢"},
+      {id:6, name:"Quloqchin", price:99000, emoji:"🎧"}
+    ];
+
+    let cart = JSON.parse(localStorage.getItem("brCart") || "[]");
+
+    function money(n) {
+      return n.toLocaleString("uz-UZ");
+    }
+
+    function renderProducts() {
+      const q = document.getElementById("search")
+        .value.toLowerCase();
+
+      document.getElementById("products").innerHTML =
+        products.filter(p => p.name.toLowerCase().includes(q))
+        .map(p => `
+          <article class="card">
+            <div class="picture">${p.emoji}</div>
+            <h3>${p.name}</h3>
+            <p class="price">${money(p.price)} so'm</p>
+            <button onclick="addCart(${p.id})">
+              Savatchaga qo'shish
+            </button>
+          </article>
+        `).join("");
+    }
+
+    function addCart(id) {
+      cart.push(id);
+      localStorage.setItem("brCart", JSON.stringify(cart));
+      renderCart();
+    }
+
+    function renderCart() {
+      document.getElementById("count").textContent = cart.length;
+      const items = cart.map(id => products.find(p => p.id === id));
+      document.getElementById("cartItems").innerHTML =
+        items.length
+        ? items.map(p => `<p>${p.emoji} ${p.name} — ${money(p.price)} so'm</p>`).join("")
+        : "Savatcha hozircha bo'sh.";
+
+      document.getElementById("total").textContent =
+        money(items.reduce((sum, p) => sum + p.price, 0));
+    }
+
+    function order() {
+      if (!cart.length) {
+        document.getElementById("message").textContent =
+          "Avval savatchaga mahsulot qo'shing.";
+        return;
+      }
+      document.getElementById("message").textContent =
+        "Bu demo savatcha. Haqiqiy buyurtma qabul qilish uchun server va aloqa usulini ulash kerak.";
+    }
+
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+  </html>
+  
